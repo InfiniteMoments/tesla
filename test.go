@@ -3,14 +3,25 @@ package main
 import (
 	"fmt"
 	"github.com/ChimeraCoder/anaconda"
+	"github.com/spf13/viper"
 	"net/url"
 )
 
+func initConfig() {
+	viper.SetConfigName("moments_config")
+	err := viper.ReadInConfig()
+	if err != nil {
+		fmt.Println("No configuration file loaded - using defaults")
+	}
+}
+
 func main() {
-	anaconda.SetConsumerKey("OoNh7FzVLSs2Yte74jt7M0Cq6")
-	anaconda.SetConsumerSecret("tA3MRJjDXUw6hgeRiUuroUbKr9M4pmz9ibIgoASevynTlOPLEr")
+	initConfig()
+
+	anaconda.SetConsumerKey(viper.GetString("CONSUMER_KEY"))
+	anaconda.SetConsumerSecret(viper.GetString("CONSUMER_SECRET"))
 	api := anaconda.NewTwitterApi(
-		"2918216473-EPfbdcB86hcq2ukFzVba62LOhc2aRWZC64UTOrd", "agGJ73g193mSHRsF5EtzDwNb3XkB4UNa8N0kANb8a6iQ9")
+		viper.GetString("ACCESS_TOKEN"), viper.GetString("ACCESS_SECRET"))
 
 	v := url.Values{}
 	s := api.PublicStreamSample(v)
