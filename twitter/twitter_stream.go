@@ -18,6 +18,8 @@ func initConfig() {
 func StartTwitterStream(searchQuery string, stopChannel chan string) {
 	initConfig()
 
+	hasStopped := false
+
 	anaconda.SetConsumerKey(viper.GetString("CONSUMER_KEY"))
 	anaconda.SetConsumerSecret(viper.GetString("CONSUMER_SECRET"))
 	api := anaconda.NewTwitterApi(
@@ -32,8 +34,7 @@ func StartTwitterStream(searchQuery string, stopChannel chan string) {
 		case name := <-stopChannel:
 			if searchQuery == name {
 				fmt.Println("Stopping", name)
-				s.Interrupt()
-				s.End()
+				hasStopped = true
 				return
 			}
 		}
@@ -42,6 +43,11 @@ func StartTwitterStream(searchQuery string, stopChannel chan string) {
 	fmt.Println("Ready to stream", searchQuery)
 
 	for t := range s.C {
+		if hasStopped {
+			s.Interrupt()
+			s.End()
+			return
+		}
 		switch v := t.(type) {
 		case anaconda.Tweet:
 			fmt.Printf("%-15s: %s\n", v.User.ScreenName, v.Text)
