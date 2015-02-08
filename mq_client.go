@@ -181,7 +181,8 @@ func (c *Consumer) Shutdown() error {
 // Handle all strings received and pass it through to be processed
 func handle(deliveries <-chan amqp.Delivery, done chan error) {
 	for d := range deliveries {
-		fmt.Println(d)
+		fmt.Println(string(d.Body))
+		d.Ack(true)
 	}
 	log.Printf("handle: deliveries channel closed")
 	done <- nil
