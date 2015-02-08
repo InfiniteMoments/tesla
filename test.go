@@ -24,7 +24,8 @@ func main() {
 		viper.GetString("ACCESS_TOKEN"), viper.GetString("ACCESS_SECRET"))
 
 	v := url.Values{}
-	s := api.PublicStreamSample(v)
+	v.Set("track", "#KRISHANDAY")
+	s := api.PublicStreamFilter(v)
 
 	for t := range s.C {
 		switch v := t.(type) {
@@ -41,6 +42,7 @@ func main() {
 				tw := v.TargetObject.Text
 				fmt.Printf("★ UnFavorited by %-15s: %s\n", sn, tw)
 			}
+			fmt.Println(v)
 		}
 	}
 
