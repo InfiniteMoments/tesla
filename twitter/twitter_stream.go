@@ -1,4 +1,4 @@
-package main
+package moments
 
 import (
 	"fmt"
@@ -7,15 +7,7 @@ import (
 	"net/url"
 )
 
-func initConfig() {
-	viper.SetConfigName("moments_config")
-	err := viper.ReadInConfig()
-	if err != nil {
-		fmt.Println("No configuration file loaded - using defaults")
-	}
-}
-
-func main() {
+func startTwitterStream() {
 	initConfig()
 
 	anaconda.SetConsumerKey(viper.GetString("CONSUMER_KEY"))
