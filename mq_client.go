@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/spf13/viper"
 	"github.com/streadway/amqp"
-	_ "github.com/tesla/twitter"
+	"github.com/tesla/twitter"
 	"log"
 	"os"
 	"strings"
@@ -21,7 +21,7 @@ type Consumer struct {
 	done    chan error
 }
 
-var stopChannel chan string
+var stopChannel = make(chan string, 10)
 
 func initConfig() {
 	viper.SetConfigName("moments_config")
@@ -189,11 +189,10 @@ func handle(deliveries <-chan amqp.Delivery, done chan error) {
 		parsedArray := strings.Split(Recvd, ":")
 		switch parsedArray[0] {
 		case "start":
-			fmt.Println("starting")
+			go twitter.StartTwitterStream(parsedArray[1], stopChannel)
 		case "stop":
-			fmt.Println("stopping")
+			stopChannel <- parsedArray[1]
 		}
-		// go twitter.StartTwitterStream(string(d.Body), stopChannel)
 		d.Ack(true)
 	}
 	log.Printf("handle: deliveries channel closed")

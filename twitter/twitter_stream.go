@@ -13,7 +13,6 @@ func initConfig() {
 	if err != nil {
 		fmt.Println("No configuration file loaded - using defaults")
 	}
-
 }
 
 func StartTwitterStream(searchQuery string, stopChannel chan string) {
@@ -27,6 +26,18 @@ func StartTwitterStream(searchQuery string, stopChannel chan string) {
 	v := url.Values{}
 	v.Set("track", searchQuery)
 	s := api.PublicStreamFilter(v)
+
+	go func() {
+		select {
+		case name := <-stopChannel:
+			if searchQuery == name {
+				fmt.Println("Stopping", name)
+				s.Interrupt()
+				s.End()
+				return
+			}
+		}
+	}()
 
 	fmt.Println("Ready to stream", searchQuery)
 
