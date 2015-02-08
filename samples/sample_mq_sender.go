@@ -66,6 +66,14 @@ func failOnError(err error, msg string) {
 func publish(amqpURI, exchange, exchangeType, routingKey string, reliable bool) error {
 	var err error
 
+	var searchQuery string
+	fmt.Println("Stream twitter for : ")
+	fmt.Scan(&searchQuery)
+
+	var queryType string
+	fmt.Println("start/stop : ")
+	fmt.Scan(&queryType)
+
 	log.Printf("dialing %q", amqpURI)
 	conn.mq, err = amqp.Dial(amqpURI)
 	if err != nil {
@@ -107,7 +115,7 @@ func publish(amqpURI, exchange, exchangeType, routingKey string, reliable bool) 
 	ack, nack := channel.NotifyConfirm(make(chan uint64, 1), make(chan uint64, 1))
 	var body string
 
-	body = "HIIII"
+	body = queryType + ":" + searchQuery
 
 	defer confirmOne(ack, nack)
 

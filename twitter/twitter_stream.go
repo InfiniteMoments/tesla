@@ -1,4 +1,4 @@
-package moments
+package twitter
 
 import (
 	"fmt"
@@ -7,7 +7,16 @@ import (
 	"net/url"
 )
 
-func startTwitterStream() {
+func initConfig() {
+	viper.SetConfigName("moments_config")
+	err := viper.ReadInConfig()
+	if err != nil {
+		fmt.Println("No configuration file loaded - using defaults")
+	}
+
+}
+
+func StartTwitterStream(searchQuery string, stopChannel chan string) {
 	initConfig()
 
 	anaconda.SetConsumerKey(viper.GetString("CONSUMER_KEY"))
@@ -16,8 +25,10 @@ func startTwitterStream() {
 		viper.GetString("ACCESS_TOKEN"), viper.GetString("ACCESS_SECRET"))
 
 	v := url.Values{}
-	v.Set("track", "#KRISHANDAY")
+	v.Set("track", searchQuery)
 	s := api.PublicStreamFilter(v)
+
+	fmt.Println("Ready to stream", searchQuery)
 
 	for t := range s.C {
 		switch v := t.(type) {
