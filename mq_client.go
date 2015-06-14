@@ -2,12 +2,15 @@ package main
 
 import (
 	"fmt"
-	"github.com/spf13/viper"
-	"github.com/streadway/amqp"
-	"github.com/tesla/twitter"
 	"log"
 	"os"
+	"os/signal"
 	"strings"
+	"syscall"
+
+	"github.com/InfiniteMoments/tesla/twitter"
+	"github.com/spf13/viper"
+	"github.com/streadway/amqp"
 )
 
 type AMQP_config struct {
@@ -29,7 +32,6 @@ func initConfig() {
 	if err != nil {
 		fmt.Println("No configuration file loaded - using defaults")
 	}
-
 }
 
 func initAMQP() AMQP_config {
@@ -53,6 +55,10 @@ func initLog() {
 }
 
 func main() {
+	// Set up channel on which to send signal notifications.
+	sigc := make(chan os.Signal, 1)
+	signal.Notify(sigc, syscall.SIGINT, syscall.SIGKILL, syscall.SIGTERM)
+
 	// initLog()
 	initConfig()
 	mq_config := initAMQP()
@@ -62,10 +68,10 @@ func main() {
 		log.Fatalf("%s", err)
 	}
 
-	//Running forever
-	select {}
+	// Wait for receiving a signal. This will clean exit on SIGINT, SIGKILL and SIGTERM and ensures the defers run.
+	<-sigc
 
-	log.Printf("shutting down")
+	log.Printf("Gracefully shutting down...")
 
 	if err := c.Shutdown(); err != nil {
 		log.Fatalf("error during shutdown: %s", err)

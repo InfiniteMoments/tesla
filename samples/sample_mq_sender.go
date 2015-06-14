@@ -19,7 +19,7 @@ type AMQP_config struct {
 
 func initConfig() {
 	viper.SetConfigName("moments_config")
-	viper.AddConfigPath("$GOPATH\\src\\github.com\\tesla")
+	viper.AddConfigPath("$GOPATH/src/github.com/InfiniteMoments/tesla")
 	err := viper.ReadInConfig()
 	if err != nil {
 		fmt.Println("No configuration file loaded - using defaults")
