@@ -195,11 +195,9 @@ func handle(deliveries <-chan amqp.Delivery, done chan error) {
 		parsedArray := strings.Split(Recvd, ":")
 		switch parsedArray[0] {
 		case "start":
-			// go twitter.StartTwitterStream(parsedArray[1], stopChannel)
 			go controller.StartStream(parsedArray[1])
 		case "stop":
 			go controller.StopStream(parsedArray[1])
-			// stopChannel <- parsedArray[1]
 		}
 		d.Ack(true)
 	}
