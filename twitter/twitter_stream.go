@@ -2,6 +2,7 @@ package twitter
 
 import (
 	"fmt"
+	"log"
 	"net/url"
 
 	"github.com/ChimeraCoder/anaconda"
@@ -32,12 +33,14 @@ func StartTwitterStream(searchQuery string, stopChannel chan string) {
 
 	go func() {
 		select {
-		case name := <-stopChannel:
-			if searchQuery == name {
-				fmt.Println("Stopping", name)
-				hasStopped = true
-				return
-			}
+		case stopQuery := <-stopChannel:
+			log.Println("Stopping for ", stopQuery)
+			// if searchQuery == name {
+			// 	fmt.Println("Stopping", name)
+			hasStopped = true
+			close(stopChannel)
+			// 	return
+			// }
 		}
 	}()
 

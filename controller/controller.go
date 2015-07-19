@@ -1,10 +1,14 @@
 package controller
 
-import "log"
+import (
+	"log"
+
+	"github.com/InfiniteMoments/tesla/twitter"
+)
 
 type twitterStreamConfig struct {
 	searchQuery string
-	stopChannel chan bool
+	stopChannel chan string
 }
 
 type streamConfig struct {
@@ -14,13 +18,24 @@ type streamConfig struct {
 var currentlyStreaming []streamConfig
 
 func StartStream(searchQuery string) {
-	var stopChannel = make(chan bool)
+	var stopChannel = make(chan string)
 	streamObject := streamConfig{}
 	streamObject.twitterStreamConfig = twitterStreamConfig{searchQuery: searchQuery, stopChannel: stopChannel}
 	currentlyStreaming = append(currentlyStreaming, streamObject)
-	log.Println(currentlyStreaming)
+
+	//Start twitter stream
+	twitter.StartTwitterStream(searchQuery, stopChannel)
 }
 
-func StopStream(searchQuery string) {
+func StopStream(stopQuery string) {
+	for _, config := range currentlyStreaming {
 
+		//Stop twitter stream
+		if config.twitterStreamConfig.searchQuery == stopQuery {
+			config.twitterStreamConfig.stopChannel <- stopQuery
+		}
+
+		return
+	}
+	log.Println("Record not found for search string:", stopQuery)
 }
