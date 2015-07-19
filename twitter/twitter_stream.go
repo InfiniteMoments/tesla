@@ -2,9 +2,10 @@ package twitter
 
 import (
 	"fmt"
+	"net/url"
+
 	"github.com/ChimeraCoder/anaconda"
 	"github.com/spf13/viper"
-	"net/url"
 )
 
 func initConfig() {
