@@ -73,6 +73,8 @@ func main() {
 
 	log.Printf("Gracefully shutting down...")
 
+	controller.StopAllStreams()
+
 	if err := c.Shutdown(); err != nil {
 		log.Fatalf("error during shutdown: %s", err)
 	}

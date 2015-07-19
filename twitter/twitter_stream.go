@@ -34,7 +34,7 @@ func StartTwitterStream(searchQuery string, stopChannel chan string) {
 	go func() {
 		select {
 		case stopQuery := <-stopChannel:
-			log.Println("Stopping for", stopQuery)
+			log.Println("Stopping stream for", stopQuery)
 			hasStopped = true
 			close(stopChannel)
 		}

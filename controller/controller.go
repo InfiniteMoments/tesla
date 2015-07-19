@@ -38,3 +38,9 @@ func StopStream(stopQuery string) {
 	}
 	log.Println("Record not found for search string:", stopQuery)
 }
+
+func StopAllStreams() {
+	for _, config := range currentlyStreaming {
+		config.twitterStreamConfig.stopChannel <- config.twitterStreamConfig.searchQuery
+	}
+}
