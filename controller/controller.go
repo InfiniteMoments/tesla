@@ -28,11 +28,12 @@ func StartStream(searchQuery string) {
 }
 
 func StopStream(stopQuery string) {
-	for _, config := range currentlyStreaming {
+	for i, config := range currentlyStreaming {
 
 		//Stop twitter stream
 		if config.twitterStreamConfig.searchQuery == stopQuery {
 			config.twitterStreamConfig.stopChannel <- stopQuery
+			currentlyStreaming = append(currentlyStreaming[:i], currentlyStreaming[i+1:]...)
 			return
 		}
 	}
